@@ -32,7 +32,7 @@ fn parse_digits(row: &String) -> Vec<u16> {
 }
 
 pub fn main() {
-    let input = puzzle_input_aslines(1);
+    let input: Vec<String> = puzzle_input_aslines(1);
     let mut sum: u16 = 0;
     for row in input {
         let parsed = parse_digits(&row);
