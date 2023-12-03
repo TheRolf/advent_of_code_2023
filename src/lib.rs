@@ -17,6 +17,11 @@ pub fn puzzle_input_asarray(day: u8) -> Vec<Vec<char>> {
         .collect()
 }
 
+pub fn puzzle_input_aslines(day: u8) -> Vec<String> {
+    let content: String = get_puzzle_input(day);
+    content.lines().map(String::from).collect()
+}
+
 pub fn print_2d_array(two_d_array: &Vec<Vec<char>>) {
     for row in two_d_array {
         let row_string: String = row.iter().collect();
