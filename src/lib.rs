@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::Read;
 
 pub fn get_puzzle_input(day: u8) -> String {
-    let file_path: String = format!("data/day_{:02}_example.txt", day);
+    let file_path: String = format!("data/day_{:02}.txt", day);
     let mut file: File = File::open(&file_path).unwrap();
     let mut content: String = String::new();
     file.read_to_string(&mut content).unwrap();
