@@ -26,6 +26,7 @@ impl fmt::Display for HandValue {
 struct Hand{
     cards: [char; 5],
     bid: u32,
+    line: String,
 }
 
 impl Hand {
@@ -36,7 +37,7 @@ impl Hand {
             cards[i] = parts.get(0).unwrap().chars().nth(i).unwrap();
         }
         let bid: u32 = parts.get(1).unwrap().parse::<u32>().unwrap();
-        Hand { cards, bid }
+        Hand { cards, bid, line }
     }
     
     pub fn println(&self){
@@ -78,17 +79,43 @@ impl Hand {
     pub fn card_value(&self, card: char) -> u8{
         if card.is_digit(10) { return card.to_digit(10).unwrap() as u8 }
         if card == 'T' { return 10 }
-        if card == 'J' { return 11 }
+        if card == 'J' { return 1 }
         if card == 'Q' { return 12 }
         if card == 'K' { return 13 }
         if card == 'A' { return 14 }
         return 0
     }
+
+    pub fn substitute_joker(&self) -> HandValue{
+        let mut counter: HashMap<char, usize> = HashMap::new();
+        let mut substituted_hand: Hand = Hand::new(self.line.clone());
+        for &card in &substituted_hand.cards {
+            *counter.entry(card).or_insert(0) += 1;
+        }
+        if counter.contains_key(&'J') {
+            let mut frequent_card: char = ' ';
+            let mut frequency: usize = 0;
+            for (card, freq) in counter {
+                if card != 'J' && freq >= frequency {
+                    if freq > frequency || substituted_hand.card_value(card) > substituted_hand.card_value(frequent_card) {
+                        frequent_card = card;
+                        frequency = freq;
+                    }
+                }
+            }
+            for i in 0..5 {
+                if substituted_hand.cards[i] == 'J' {
+                    substituted_hand.cards[i] = frequent_card;
+                }
+            }
+        }
+        return substituted_hand.value();
+    }
 }
 
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.value().partial_cmp(&other.value()) {
+        match self.substitute_joker().partial_cmp(&other.substitute_joker()) {
             Some(Ordering::Equal) => {
                 // Compare based on the array values
                 Some(self.card_values().cmp(&other.card_values()))
@@ -108,7 +135,8 @@ pub fn main() {
     let input: Vec<String> = puzzle_input_aslines(7);
     let mut hands: Vec<Hand> = Vec::new();
     for line in input{
-        let new_hand: Hand = Hand::new(line);
+        let mut new_hand: Hand = Hand::new(line);
+        println!("{:?}", new_hand.cards);
         hands.push(new_hand);
     }
 
@@ -116,7 +144,7 @@ pub fn main() {
 
     let mut winnings = 0;
     let mut i = 1;
-    for hand in hands {
+    for mut hand in hands {
         hand.println();
         hand.value();
         winnings += i*hand.bid;
