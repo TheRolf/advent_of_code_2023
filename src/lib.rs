@@ -28,10 +28,3 @@ pub fn print_2d_array(two_d_array: &Vec<Vec<char>>) {
         println!("{}", row_string);
     }
 }
-
-pub fn get_char(matrix: &Vec<Vec<char>>, i: u8, j: u8) -> char {
-    matrix
-        .get(i as usize)
-        .and_then(|row| row.get(j as usize).cloned())
-        .unwrap()
-}
