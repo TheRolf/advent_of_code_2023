@@ -1,5 +1,6 @@
-use advent_of_code_2023::*;
 use std::collections::HashMap;
+
+use advent_of_code_2023::*;
 
 const COLORS: &[&str] = &["red", "green", "blue"];
 struct Round {
