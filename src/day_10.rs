@@ -15,9 +15,9 @@ enum Move {
 struct PipeMaze {
     diagram: Vec<Vec<char>>,
     visited: Vec<Vec<bool>>,
+    inner: Vec<Vec<bool>>,
     width: usize,
     height: usize,
-    start: (usize, usize),
     current: (usize, usize),
     movement: HashMap<Move, (i16, i16)>,
     allowed_movements_to: HashMap<char, Vec<Move>>,
@@ -29,12 +29,15 @@ impl PipeMaze {
         let width: usize = input[0].len();
         let height: usize = input.len();
         let mut visited: Vec<Vec<bool>> = Vec::new();
-        let mut start: (usize, usize) = (0, 0);
+        let mut inner: Vec<Vec<bool>> = Vec::new();
+        let mut current: (usize, usize) = (0, 0);
         for i in 0..height {
             visited.push(Vec::new());
+            inner.push(Vec::new());
             for j in 0..width {
+                inner[i].push(false);
                 if input[i][j] == 'S' {
-                    start = (i, j);
+                    current = (i, j);
                     visited[i].push(true);
                 } else {
                     visited[i].push(false);
@@ -65,10 +68,10 @@ impl PipeMaze {
         PipeMaze {
             diagram: input,
             visited,
+            inner,
             width,
             height,
-            start,
-            current: start.clone(),
+            current,
             movement,
             allowed_movements_to,
             allowed_movements_from,
