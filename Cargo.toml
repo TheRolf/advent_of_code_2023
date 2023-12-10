@@ -3,8 +3,53 @@ name = "advent_of_code_2023"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "advent_of_code_2023"
+path = "src/lib.rs"
+
+[[bin]]
+name = "new"
+path = "src/main.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rand = "0.8.5"
 num-integer = "0.1.45"
+rhai = "1.16.0"
+
+[[bin]]
+name = "1"
+path = "src/day_01.rs"
+
+[[bin]]
+name = "2"
+path = "src/day_02.rs"
+
+[[bin]]
+name = "3"
+path = "src/day_03.rs"
+
+[[bin]]
+name = "4"
+path = "src/day_04.rs"
+
+[[bin]]
+name = "5"
+path = "src/day_05.rs"
+
+[[bin]]
+name = "6"
+path = "src/day_06.rs"
+
+[[bin]]
+name = "7"
+path = "src/day_07.rs"
+
+[[bin]]
+name = "8"
+path = "src/day_08.rs"
+
+[[bin]]
+name = "9"
+path = "src/day_09.rs"
