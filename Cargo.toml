@@ -16,7 +16,6 @@ path = "src/main.rs"
 [dependencies]
 rand = "0.8.5"
 num-integer = "0.1.45"
-rhai = "1.16.0"
 num-traits = "0.2"
 
 [[bin]]
