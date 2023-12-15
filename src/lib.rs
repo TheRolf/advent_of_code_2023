@@ -9,14 +9,14 @@ pub fn get_puzzle_input(day: u8, example: bool) -> String {
     content
 }
 
-pub fn puzzle_input_asarray(day: u8, example: bool) -> Vec<Vec<char>> {
-    let content: String = get_puzzle_input(day, example);
-    content.lines().map(|line: &str| line.chars().collect()).collect()
-}
-
 pub fn puzzle_input_aslines(day: u8, example: bool) -> Vec<String> {
     let content: String = get_puzzle_input(day, example);
     content.lines().map(String::from).collect()
+}
+
+pub fn puzzle_input_asarray(day: u8, example: bool) -> Vec<Vec<char>> {
+    let content: String = get_puzzle_input(day, example);
+    content.lines().map(|line: &str| line.chars().collect()).collect()
 }
 
 pub fn print_2d_array(two_d_array: &Vec<Vec<char>>) {
@@ -24,6 +24,7 @@ pub fn print_2d_array(two_d_array: &Vec<Vec<char>>) {
         let row_string: String = row.iter().collect();
         println!("{}", row_string);
     }
+    println!();
 }
 
 pub fn prepare_day(day_number: usize) {
