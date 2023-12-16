@@ -2,6 +2,7 @@
 
 use advent_of_code_2023::*;
 
+#[derive(Clone)]
 struct Layout {
     cells: Vec<Vec<char>>,
     energised: Vec<Vec<char>>,
@@ -24,22 +25,22 @@ impl Layout {
     }
 
     pub fn simulate(&mut self, pos_i: i32, pos_j: i32, dir_i: i32, dir_j: i32) {
-        println!(
-            "Simulating ({}, {}) with direction {}",
-            pos_i + 1,
-            pos_j + 1,
-            if dir_i == 1 {
-                "down"
-            } else if dir_i == -1 {
-                "up"
-            } else if dir_j == 1 {
-                "right"
-            } else if dir_j == -1 {
-                "left"
-            } else {
-                ""
-            },
-        );
+        // println!(
+        //     "Simulating ({}, {}) with direction {}",
+        //     pos_i + 1,
+        //     pos_j + 1,
+        //     if dir_i == 1 {
+        //         "down"
+        //     } else if dir_i == -1 {
+        //         "up"
+        //     } else if dir_j == 1 {
+        //         "right"
+        //     } else if dir_j == -1 {
+        //         "left"
+        //     } else {
+        //         ""
+        //     },
+        // );
 
         if 0 <= pos_i && (pos_i as usize) < self.height && 0 <= pos_j && (pos_j as usize) < self.width {
             let mut i: i32 = pos_i as i32;
@@ -122,9 +123,26 @@ impl Layout {
 }
 
 pub fn main() {
-    let input = puzzle_input_asarray(16, false);
+    let input: Vec<Vec<char>> = puzzle_input_asarray(16, false);
     let mut layout: Layout = Layout::new(input);
+    let mut most_energised: usize = 0;
+    for i in 0..layout.height {
+        let mut layout_copy_1: Layout = layout.clone();
+        layout_copy_1.simulate(i as i32, 0, 0, 1);
+        most_energised = most_energised.max(layout_copy_1.energised_count());
+        let mut layout_copy_2: Layout = layout.clone();
+        layout_copy_2.simulate(i as i32, layout.width as i32 - 1, 0, -1);
+        most_energised = most_energised.max(layout_copy_2.energised_count());
+    }
+    for j in 0..layout.width {
+        let mut layout_copy_1: Layout = layout.clone();
+        layout_copy_1.simulate(0, j as i32, 1, 0);
+        most_energised = most_energised.max(layout_copy_1.energised_count());
+        let mut layout_copy_2: Layout = layout.clone();
+        layout_copy_2.simulate(layout.height as i32 - 1, j as i32, -1, 0);
+        most_energised = most_energised.max(layout_copy_2.energised_count());
+    }
     layout.simulate(0, 0, 0, 1);
-    // print_2d_array(&layout.energised);
     println!("{}", layout.energised_count());
+    println!("{}", most_energised);
 }
