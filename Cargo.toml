@@ -18,6 +18,7 @@ rand = "0.8.5"
 num-integer = "0.1.45"
 num-traits = "0.2"
 pathfinding = "4.6.0"
+itertools = "0.12.0"
 
 [[bin]]
 name = "1"
@@ -86,3 +87,7 @@ path = "src/day_16.rs"
 [[bin]]
 name = "17"
 path = "src/day_17.rs"
+
+[[bin]]
+name = "18"
+path = "src/day_18.rs"
