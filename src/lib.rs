@@ -1,4 +1,3 @@
-use std::collections::btree_set::{BTreeSet, IntoIter};
 use std::fmt::Display;
 use std::fs::{self, File};
 use std::io::{Read, Write};
@@ -44,79 +43,5 @@ pub fn prepare_day(day_number: usize) {
         writeln!(toml_file, "[[bin]]").unwrap();
         writeln!(toml_file, "name = \"{}\"", day_number).unwrap();
         writeln!(toml_file, "path = \"src/day_{:02}.rs\"", day_number).unwrap();
-    }
-}
-
-enum UniquePermutations {
-    Leaf {
-        elements: Option<Vec<i32>>,
-    },
-    Stem {
-        elements: Vec<i32>,
-        unique_elements: IntoIter<i32>,
-        first_element: i32,
-        inner: Box<Self>,
-    },
-}
-
-impl UniquePermutations {
-    fn new(elements: Vec<i32>) -> Self {
-        if elements.len() == 1 {
-            let elements = Some(elements);
-            Self::Leaf { elements }
-        } else {
-            let mut unique_elements = elements.clone().into_iter().collect::<BTreeSet<_>>().into_iter();
-
-            let (first_element, inner) = Self::next_level(&mut unique_elements, elements.clone()).expect("Must have at least one item");
-
-            Self::Stem {
-                elements,
-                unique_elements,
-                first_element,
-                inner,
-            }
-        }
-    }
-
-    fn next_level(mut unique_elements: impl Iterator<Item = i32>, elements: Vec<i32>) -> Option<(i32, Box<Self>)> {
-        let first_element = unique_elements.next()?;
-
-        let mut remaining_elements = elements;
-
-        if let Some(idx) = remaining_elements.iter().position(|&i| i == first_element) {
-            remaining_elements.remove(idx);
-        }
-
-        let inner = Box::new(Self::new(remaining_elements));
-
-        Some((first_element, inner))
-    }
-}
-
-impl Iterator for UniquePermutations {
-    type Item = Vec<i32>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            Self::Leaf { elements } => elements.take(),
-            Self::Stem {
-                elements,
-                unique_elements,
-                first_element,
-                inner,
-            } => loop {
-                match inner.next() {
-                    Some(mut v) => {
-                        v.insert(0, *first_element);
-                        return Some(v);
-                    }
-                    None => {
-                        let (next_fe, next_i) = Self::next_level(&mut *unique_elements, elements.clone())?;
-                        *first_element = next_fe;
-                        *inner = next_i;
-                    }
-                }
-            },
-        }
     }
 }

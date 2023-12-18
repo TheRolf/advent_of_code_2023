@@ -1,8 +1,8 @@
 #![allow(dead_code, unused_variables, unused_mut)]
 
-use advent_of_code_2023::*;
-
 use std::collections::btree_set::{BTreeSet, IntoIter};
+
+use advent_of_code_2023::*;
 
 enum UniquePermutations {
     Leaf {
@@ -22,14 +22,10 @@ impl UniquePermutations {
             let elements = Some(elements);
             Self::Leaf { elements }
         } else {
-            let mut unique_elements = elements
-                .clone()
-                .into_iter()
-                .collect::<BTreeSet<_>>()
-                .into_iter();
+            let mut unique_elements = elements.clone().into_iter().collect::<BTreeSet<_>>().into_iter();
 
-            let (first_element, inner) = Self::next_level(&mut unique_elements, elements.clone())
-                .expect("Must have at least one item");
+            let (first_element, inner) =
+                Self::next_level(&mut unique_elements, elements.clone()).expect("Must have at least one item");
 
             Self::Stem {
                 elements,
@@ -40,10 +36,7 @@ impl UniquePermutations {
         }
     }
 
-    fn next_level(
-        mut unique_elements: impl Iterator<Item = i32>,
-        elements: Vec<i32>,
-    ) -> Option<(i32, Box<Self>)> {
+    fn next_level(mut unique_elements: impl Iterator<Item = i32>, elements: Vec<i32>) -> Option<(i32, Box<Self>)> {
         let first_element = unique_elements.next()?;
 
         let mut remaining_elements = elements;
@@ -76,8 +69,7 @@ impl Iterator for UniquePermutations {
                         return Some(v);
                     }
                     None => {
-                        let (next_fe, next_i) =
-                            Self::next_level(&mut *unique_elements, elements.clone())?;
+                        let (next_fe, next_i) = Self::next_level(&mut *unique_elements, elements.clone())?;
                         *first_element = next_fe;
                         *inner = next_i;
                     }
@@ -110,8 +102,12 @@ impl Row {
             }
         }
 
-
-        Row { cells, config, damaged, unknown }
+        Row {
+            cells,
+            config,
+            damaged,
+            unknown,
+        }
     }
 
     pub fn is_valid(&self) -> bool {
@@ -131,55 +127,128 @@ impl Row {
         self.config.iter().eq(actual_counts.iter())
     }
 
-    pub fn iterate(&self) -> usize {
+    pub fn iterate_brute_force(&self) -> (usize, usize) {
         let mut count: usize = 0;
+        let mut count_invalid: usize = 0;
         let unknown_count: usize = self.unknown.len();
         let damaged_count: usize = self.damaged.len();
         let config_count: usize = self.config.iter().sum();
         let mut base: Vec<i32> = vec![1; config_count - damaged_count];
         base.extend(vec![0; unknown_count - base.len()]);
-        // for (j, perm) in base.iter().permutations(base.len()).unique().into_iter().enumerate() {
+        if base.len() == 0 {
+            return (1, 0);
+        }
         for (j, perm) in UniquePermutations::new(base).enumerate() {
-            // print!("{}   ", j);
             let mut new_row = self.clone();
             for (i, x) in perm.iter().enumerate() {
                 if *x == 1 {
-                    new_row.cells[ new_row.unknown[i] ] = '#';
+                    new_row.cells[new_row.unknown[i]] = '#';
                 }
             }
-            // println!("{:?} {:?} {:?}", new_row.cells, new_row.config, new_row.is_valid());
             if new_row.is_valid() {
                 count += 1;
+            } else {
+                count_invalid += 1;
             }
         }
-        count
+        (count, count_invalid)
+    }
+
+    pub fn fix_damaged_seq_at_pos(&mut self, seq_len: usize, position: usize) {
+        if position > 0 {
+            self.cells[position - 1] = '.';
+        }
+        for i in 0..seq_len {
+            self.cells[position + i] = '#';
+        }
+        if position + seq_len < self.cells.len() {
+            self.cells[position + seq_len] = '.';
+        }
+        self.damaged = Vec::new();
+        self.unknown = Vec::new();
+        for (i, cell) in self.cells.iter().enumerate() {
+            if cell == &'#' {
+                self.damaged.push(i);
+            } else if cell == &'?' {
+                self.unknown.push(i);
+            }
+        }
+    }
+
+    pub fn iterate_heuristic(&mut self) -> (usize, usize) {
+        let mut new_row = self.clone();
+        let mut damaged_sequences: Vec<(usize, usize)> = Vec::new();
+        let mut current_index: usize = 0;
+        let mut current_length: usize = 0;
+
+        // fixing the damaged sequences from the left until they are certain
+        let mut cell_index = 0;
+        let mut config_index = 0;
+        loop {
+            if cell_index >= new_row.cells.len() || new_row.cells[cell_index] == '?' {
+                break;
+            } else if new_row.cells[cell_index] == '#' {
+                new_row.fix_damaged_seq_at_pos(new_row.config[config_index], cell_index);
+                cell_index += new_row.config[config_index];
+                config_index += 1;
+            } else {
+                cell_index += 1;
+            }
+        }
+
+        // fixing the damaged sequences from the right until they are certain
+        let mut cell_index = new_row.cells.len() - 1;
+        let mut config_index = new_row.config.len() - 1;
+        loop {
+            if cell_index <= 0 || new_row.cells[cell_index] == '?' {
+                break;
+            } else if new_row.cells[cell_index] == '#' {
+                new_row.fix_damaged_seq_at_pos(
+                    new_row.config[config_index],
+                    cell_index + 1 - new_row.config[config_index],
+                );
+                if cell_index < new_row.config[config_index] || config_index == 0 {
+                    break;
+                }
+                cell_index -= new_row.config[config_index];
+                config_index -= 1;
+            } else {
+                cell_index -= 1;
+            }
+        }
+
+        // fixing the damaged sequences from the largest size until they are certain
+        let config_desc = new_row.config.clone().sort_by(|a, b| b.cmp(a));
+
+        println!("{} -> {}", self.cells.iter().collect::<String>(), new_row.cells.iter().collect::<String>());
+        new_row.iterate_brute_force()
     }
 }
 
-
-
 struct SpringRecord {
-    rows: Vec<Row>
+    rows: Vec<Row>,
 }
 
 pub fn main() {
-    let input: Vec<String> = puzzle_input_aslines(12, true);
+    let input: Vec<String> = puzzle_input_aslines(12, false);
     let mut spring_record: SpringRecord = SpringRecord { rows: Vec::new() };
+    let mut count_bf = 0;
     let mut count = 0;
     for line in input {
         let mut row: Row = Row::new(line);
         spring_record.rows.push(row);
     }
 
-    for (i, row) in spring_record.rows.iter().enumerate() {
-        // println!("{:?} {:?} {:?}", row.cells, row.config, row.is_valid());
-        let local_count = row.iterate();
-        println!("{} {}", i+1, local_count);
-        count += local_count;
+    for (i, row) in spring_record.rows.iter_mut().enumerate() {
+        print!("{}: ", i + 1);
+        // let local_count_bf = row.iterate_brute_force();
+        let local_count = row.iterate_heuristic();
+        // print!("{:?} \t", local_count_bf);
+        print!("{:?} \t", local_count);
+        println!();
+        // count_bf += local_count_bf.0;
+        count += local_count.0;
     }
-
-    // let mut row = Row::new(".####??????.##### 1,2,3,2,1".to_string());
-    // count = row.iterate();
-    
+    // println!("{}", count_bf);
     println!("{}", count);
 }
