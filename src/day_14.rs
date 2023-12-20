@@ -140,7 +140,7 @@ impl Platform {
 }
 
 pub fn main() {
-    let mut input: Vec<Vec<char>> = puzzle_input_asarray(14, false);
+    let input: Vec<Vec<char>> = puzzle_input_asarray(14, false);
     let mut platform: Platform = Platform::new(&input);
     platform.tilt(Direction::North);
     println!("{}", platform.total_load());
