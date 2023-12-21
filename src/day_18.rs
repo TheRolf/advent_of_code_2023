@@ -4,7 +4,7 @@ use advent_of_code_2023::*;
 use itertools::Itertools; // 0.8.2
 use std::{collections::HashMap, str::FromStr};
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 enum Direction {
     Up,
     Right,
@@ -45,6 +45,24 @@ impl Instruction {
             colour,
         }
     }
+    pub fn new2(text: String) -> Self {
+        let split_text: Vec<&str> = text.split(" ").collect();
+        let direction: Direction = match split_text[2][1..8].chars().nth(6).unwrap() {
+            '0' => Direction::Right,
+            '1' => Direction::Down,
+            '2' => Direction::Left,
+            '3' => Direction::Right,
+            _ => Direction::Up,
+        };
+
+        let steps: usize =  i64::from_str_radix(&split_text[2][1..8][1..6], 16).unwrap() as usize;
+        let colour: String = " ".to_string();
+        Self {
+            direction,
+            steps,
+            colour,
+        }
+    }
 }
 
 #[derive(Default)]
@@ -62,6 +80,18 @@ impl Terrain {
         let mut instructions: Vec<Instruction> = Vec::new();
         for line in input {
             let instruction = Instruction::new(line);
+            instructions.push(instruction);
+        }
+        Self {
+            instructions,
+            ..Default::default()
+        }
+    }
+
+    pub fn new2(input: Vec<String>) -> Self {
+        let mut instructions: Vec<Instruction> = Vec::new();
+        for line in input {
+            let instruction = Instruction::new2(line);
             instructions.push(instruction);
         }
         Self {
@@ -204,7 +234,9 @@ impl Terrain {
         let mut j: i32;
         while queue.len() > 0 {
             (i, j) = queue.pop().unwrap();
-            // println!("{} {}, {}", i, j, queue.len());
+            if queue.len()%10000 == 0 {
+                println!("{} {}, {}", i, j, queue.len());
+            }
             self.trench.entry(i).or_insert(Vec::new()).push(j);
             for (d_i, d_j) in vec![(0, 1), (0, -1), (1, 0), (-1, 0)] {
                 let new_i = i + d_i;
@@ -225,9 +257,14 @@ impl Terrain {
 }
 
 pub fn main() {
-    let input = puzzle_input_aslines(18, false);
-    let mut terrain = Terrain::new(input);
+    let input = puzzle_input_aslines(18, true);
+    let mut terrain = Terrain::new2(input);
+    for x in &terrain.instructions {
+        println!("{:?} {}", x.direction, x.steps);
+    }
     terrain.dig();
-    terrain.fill_recurse_iter(-84, 11);
+    // terrain.fill_recurse_iter(-84, 11);
+    println!("{:?}", terrain.trench.keys());
+    // terrain.fill_recurse_iter(1, 1);
     println!("Area: {}", terrain.total());
 }
