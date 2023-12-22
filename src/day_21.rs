@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_variables, unused_mut)]
 
-use std::collections::{HashSet, BTreeSet};
+use std::collections::{BTreeSet, HashSet};
 
 use advent_of_code_2023::*;
 
@@ -27,7 +27,13 @@ impl Garden {
                 }
             }
         }
-        Self {map: input, length, width, start, visited: HashSet::new()}
+        Self {
+            map: input,
+            length,
+            width,
+            start,
+            visited: HashSet::new(),
+        }
     }
 
     pub fn reach_from_start(&mut self, step_count: usize, brute_force: bool) {
@@ -47,7 +53,7 @@ impl Garden {
                 let i_new = i + i_diff;
                 let j_new = j + j_diff;
                 if self.map[i_new as usize][j_new as usize] != '#' {
-                    self.reach_brute_force(i_new, j_new, step_count-1);
+                    self.reach_brute_force(i_new, j_new, step_count - 1);
                 }
             }
         }
@@ -60,7 +66,7 @@ impl Garden {
         let mut i: i32;
         let mut j: i32;
         let mut step_count: usize;
-        while !queue.is_empty(){
+        while !queue.is_empty() {
             (i, j, step_count) = queue.pop_last().unwrap();
             // println!("{} {} {}", i, j, step_count);
             if step_count == 0 {
@@ -69,17 +75,20 @@ impl Garden {
                 for (i_diff, j_diff) in vec![(0, 1), (1, 0), (-1, 0), (0, -1)] {
                     let i_new = i + i_diff;
                     let j_new = j + j_diff;
-                    if !history.contains(&(i_new, j_new, step_count-1))
-                    && self.map[modulo(i_new, self.length as i32)][modulo(j_new, self.width as i32)] != '#' {
-                        queue.insert((i_new, j_new, step_count-1));
-                        history.insert((i_new, j_new, step_count-1));
+                    if !history.contains(&(i_new, j_new, step_count - 1))
+                        && self.map[modulo(i_new, self.length as i32)]
+                            [modulo(j_new, self.width as i32)]
+                            != '#'
+                    {
+                        queue.insert((i_new, j_new, step_count - 1));
+                        history.insert((i_new, j_new, step_count - 1));
                     }
                 }
             }
         }
     }
 
-    pub fn is_valid(&self, i: i32, j: i32) -> bool{
+    pub fn is_valid(&self, i: i32, j: i32) -> bool {
         i >= 0 && (i as usize) < self.length && j >= 0 && (j as usize) < self.width
     }
 
@@ -95,7 +104,6 @@ impl Garden {
             println!();
         }
     }
-
 }
 
 pub fn main() {
@@ -103,10 +111,9 @@ pub fn main() {
     let input = puzzle_input_asarray(21, example);
     let mut garden: Garden = Garden::new(input);
     // garden.reach_from_start(if example {6} else {64}, false);
-    
-    garden.reach_from_start(if example {1000} else {64}, false);
+
+    garden.reach_from_start(if example { 1000 } else { 64 }, false);
     garden.show_visited();
     println!("{}", garden.visited.len());
     // println!("{:?}", garden.visited);
-
-}   
+}

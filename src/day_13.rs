@@ -107,7 +107,9 @@ impl Pattern {
         let original_value: usize = self.lines_before_mirror(-1);
         for row in 0..self.height {
             for col in 0..self.width {
-                let value = self.smudge(row, col).lines_before_mirror(original_value as i32);
+                let value = self
+                    .smudge(row, col)
+                    .lines_before_mirror(original_value as i32);
                 if value != original_value && value > 0 {
                     return value;
                 }

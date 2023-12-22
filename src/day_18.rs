@@ -55,7 +55,7 @@ impl Instruction {
             _ => Direction::Up,
         };
 
-        let steps: usize =  i64::from_str_radix(&split_text[2][1..8][1..6], 16).unwrap() as usize;
+        let steps: usize = i64::from_str_radix(&split_text[2][1..8][1..6], 16).unwrap() as usize;
         let colour: String = " ".to_string();
         Self {
             direction,
@@ -123,14 +123,28 @@ impl Terrain {
             match instr.direction {
                 Direction::Down | Direction::Up => {
                     for i in 0..instr.steps {
-                        self.pos_i += if instr.direction == Direction::Down { 1 } else { -1 };
-                        self.trench.entry(self.pos_i).or_insert(Vec::new()).push(self.pos_j);
+                        self.pos_i += if instr.direction == Direction::Down {
+                            1
+                        } else {
+                            -1
+                        };
+                        self.trench
+                            .entry(self.pos_i)
+                            .or_insert(Vec::new())
+                            .push(self.pos_j);
                     }
                 }
                 Direction::Left | Direction::Right => {
                     for j in 0..instr.steps {
-                        self.pos_j += if instr.direction == Direction::Right { 1 } else { -1 };
-                        self.trench.entry(self.pos_i).or_insert(Vec::new()).push(self.pos_j);
+                        self.pos_j += if instr.direction == Direction::Right {
+                            1
+                        } else {
+                            -1
+                        };
+                        self.trench
+                            .entry(self.pos_i)
+                            .or_insert(Vec::new())
+                            .push(self.pos_j);
                     }
                 }
             }
@@ -193,7 +207,9 @@ impl Terrain {
             let mut m: i32 = 1;
             let mut new_i = i + m * d_i;
             let mut new_j = j + m * d_j;
-            while self.trench.contains_key(&new_i) && !self.trench.get(&new_i).unwrap().contains(&new_j) {
+            while self.trench.contains_key(&new_i)
+                && !self.trench.get(&new_i).unwrap().contains(&new_j)
+            {
                 self.trench.entry(new_i).or_insert(Vec::new()).push(new_j);
                 self.fill_recurse(new_i, new_j, !rev);
                 m += 1;
@@ -234,7 +250,7 @@ impl Terrain {
         let mut j: i32;
         while queue.len() > 0 {
             (i, j) = queue.pop().unwrap();
-            if queue.len()%10000 == 0 {
+            if queue.len() % 10000 == 0 {
                 println!("{} {}, {}", i, j, queue.len());
             }
             self.trench.entry(i).or_insert(Vec::new()).push(j);

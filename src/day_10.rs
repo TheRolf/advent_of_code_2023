@@ -56,7 +56,10 @@ impl PipeMaze {
         allowed_movements_to.insert('7', [Move::Left, Move::Down].to_vec());
         allowed_movements_to.insert('L', [Move::Right, Move::Up].to_vec());
         allowed_movements_to.insert('J', [Move::Left, Move::Up].to_vec());
-        allowed_movements_to.insert('S', [Move::Up, Move::Down, Move::Left, Move::Right].to_vec());
+        allowed_movements_to.insert(
+            'S',
+            [Move::Up, Move::Down, Move::Left, Move::Right].to_vec(),
+        );
 
         let mut allowed_movements_from: HashMap<Move, Vec<char>> = HashMap::new();
         allowed_movements_from.insert(Move::Left, ['-', 'F', 'L', 'S'].to_vec());
@@ -91,7 +94,12 @@ impl PipeMaze {
             return false;
         }
         let value: &char = &self.diagram[i as usize][j as usize];
-        if self.allowed_movements_from.get(arrival).unwrap().contains(value) {
+        if self
+            .allowed_movements_from
+            .get(arrival)
+            .unwrap()
+            .contains(value)
+        {
             return true;
         }
         false

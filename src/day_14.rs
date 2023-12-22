@@ -44,8 +44,10 @@ impl Platform {
         };
         for i in first_range {
             for j in second_range.clone() {
-                if (vec![Direction::North, Direction::South].contains(&direction) && self.cells[i][j] == 'O')
-                    || (vec![Direction::West, Direction::East].contains(&direction) && self.cells[j][i] == 'O')
+                if (vec![Direction::North, Direction::South].contains(&direction)
+                    && self.cells[i][j] == 'O')
+                    || (vec![Direction::West, Direction::East].contains(&direction)
+                        && self.cells[j][i] == 'O')
                 {
                     match direction {
                         Direction::North => {

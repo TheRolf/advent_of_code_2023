@@ -29,7 +29,10 @@ impl Box {
     pub fn add(&mut self, label: String, focal_length: usize) {
         let index: i32 = self.index_of(&label);
         if index < 0 {
-            self.lenses.push(Lens { label, focal_length });
+            self.lenses.push(Lens {
+                label,
+                focal_length,
+            });
         } else {
             self.lenses[index as usize].focal_length = focal_length;
         }

@@ -16,7 +16,11 @@ impl CityMap {
         let width = input[0].len();
         let heat_loss = input
             .iter()
-            .map(|row| row.iter().map(|&c| c.to_digit(10).unwrap() as usize).collect())
+            .map(|row| {
+                row.iter()
+                    .map(|&c| c.to_digit(10).unwrap() as usize)
+                    .collect()
+            })
             .collect();
         Self {
             heat_loss,
@@ -139,7 +143,11 @@ impl Block {
         }
 
         // UP movement
-        if self.i > 0 && (self.left >= 4 || self.right >= 4 || self.up > 0) && self.up < 10 && self.down == 0 {
+        if self.i > 0
+            && (self.left >= 4 || self.right >= 4 || self.up > 0)
+            && self.up < 10
+            && self.down == 0
+        {
             successors.push((
                 Block {
                     i: self.i - 1,
@@ -174,7 +182,11 @@ impl Block {
         }
 
         // LEFT movement
-        if self.j > 0 && (self.up >= 4 || self.down >= 4 || self.left > 0) && self.left < 10 && self.right == 0 {
+        if self.j > 0
+            && (self.up >= 4 || self.down >= 4 || self.left > 0)
+            && self.left < 10
+            && self.right == 0
+        {
             successors.push((
                 Block {
                     i: self.i,

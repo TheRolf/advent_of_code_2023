@@ -51,7 +51,12 @@ impl Workflow {
                 let second_half: Vec<&str> = cmd[2..].split(":").collect();
                 let value = second_half[0].parse::<usize>().unwrap();
                 let state = second_half[1].to_string();
-                rules.push(Rule { var, cond, value, state });
+                rules.push(Rule {
+                    var,
+                    cond,
+                    value,
+                    state,
+                });
             } else {
                 or_else = cmd.to_string();
             }
@@ -93,7 +98,7 @@ impl Config {
     pub fn count(&self) -> usize {
         let mut count: usize = 1;
         for (min_x, max_x) in self.bounds.values() {
-            count *= max_x-min_x+1;
+            count *= max_x - min_x + 1;
         }
         count
     }
@@ -106,7 +111,7 @@ impl Default for Config {
         for c in vec!['x', 'm', 'a', 's'] {
             bounds.insert(c, (1, 4000));
         }
-        Self {next_state, bounds}
+        Self { next_state, bounds }
     }
 }
 struct System {
@@ -122,7 +127,8 @@ impl System {
 
     pub fn add(&mut self, text: String) {
         let split_text: Vec<&str> = text.split("{").collect();
-        let workflow: Workflow = Workflow::new(split_text[1][..(split_text[1].len() - 1)].to_string());
+        let workflow: Workflow =
+            Workflow::new(split_text[1][..(split_text[1].len() - 1)].to_string());
         self.workflows.insert(split_text[0].to_string(), workflow);
     }
 
@@ -145,7 +151,7 @@ impl System {
         let mut sum: usize = 0;
         for x in 1..4001 {
             for m in 1..4001 {
-            println!("{} {} {}", x, m, sum);
+                println!("{} {} {}", x, m, sum);
                 for a in 1..4001 {
                     for s in 1..4001 {
                         let mut rating: HashMap<char, usize> = HashMap::new();
@@ -165,8 +171,8 @@ impl System {
     }
 
     pub fn find_accept_bounds(&self) -> usize {
-        let mut to_explore : Vec<Config> = Vec::new();
-        let mut accept_bounds : Vec<Config> = Vec::new();
+        let mut to_explore: Vec<Config> = Vec::new();
+        let mut accept_bounds: Vec<Config> = Vec::new();
         to_explore.push(Config::new());
         while !to_explore.is_empty() {
             let mut config: Config = to_explore.pop().unwrap();
@@ -178,28 +184,33 @@ impl System {
                         let mut new_config = config.clone();
                         new_config.next_state = rule.state.clone();
                         if rule.cond == '<' {
-                            new_config.bounds.entry(rule.var).or_insert((1, 4000)).1 = rule.value - 1;
+                            new_config.bounds.entry(rule.var).or_insert((1, 4000)).1 =
+                                rule.value - 1;
                             config.bounds.entry(rule.var).or_insert((1, 4000)).0 = rule.value;
                         } else {
-                            new_config.bounds.entry(rule.var).or_insert((1, 4000)).0 = rule.value + 1;
+                            new_config.bounds.entry(rule.var).or_insert((1, 4000)).0 =
+                                rule.value + 1;
                             config.bounds.entry(rule.var).or_insert((1, 4000)).1 = rule.value;
                         }
                         to_explore.push(new_config);
                     }
-                    config.next_state = self.workflows.get(&config.next_state).unwrap().or_else.clone();
+                    config.next_state = self
+                        .workflows
+                        .get(&config.next_state)
+                        .unwrap()
+                        .or_else
+                        .clone();
                     to_explore.push(config);
-
                 }
             }
         }
-        let mut total:usize = 0;
+        let mut total: usize = 0;
         for config in accept_bounds {
-            let config_count =  config.count();
+            let config_count = config.count();
             // println!("{:?} {}", config.bounds,config_count);
             total += config_count;
         }
         total
-
     }
 }
 

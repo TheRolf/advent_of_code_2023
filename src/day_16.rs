@@ -42,7 +42,11 @@ impl Layout {
         //     },
         // );
 
-        if 0 <= pos_i && (pos_i as usize) < self.height && 0 <= pos_j && (pos_j as usize) < self.width {
+        if 0 <= pos_i
+            && (pos_i as usize) < self.height
+            && 0 <= pos_j
+            && (pos_j as usize) < self.width
+        {
             let mut i: i32 = pos_i as i32;
             let mut j: i32 = pos_j as i32;
             match self.cells[i as usize][j as usize] {
@@ -89,7 +93,11 @@ impl Layout {
                     loop {
                         i += dir_i as i32;
                         j += dir_j as i32;
-                        if 0 > i || (i as usize) >= self.height || 0 > j || (j as usize) >= self.width {
+                        if 0 > i
+                            || (i as usize) >= self.height
+                            || 0 > j
+                            || (j as usize) >= self.width
+                        {
                             return;
                         } else if self.cells[i as usize][j as usize] == '.' {
                             self.energise(i as usize, j as usize);

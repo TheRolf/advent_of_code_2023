@@ -1,13 +1,15 @@
 #![allow(dead_code, unused_variables, unused_mut)]
 
 pub fn distance_travelled(hold_time: u64, total_time: u64) -> u64 {
-    hold_time * (total_time-hold_time)
+    hold_time * (total_time - hold_time)
 }
 
 pub fn beating_record(total_time: u64, record_time: u64) -> u64 {
     let mut beating: u64 = 0;
-    for i in 0..(total_time+1){
-        if distance_travelled(i, total_time) > record_time { beating += 1; }
+    for i in 0..(total_time + 1) {
+        if distance_travelled(i, total_time) > record_time {
+            beating += 1;
+        }
     }
     beating
 }

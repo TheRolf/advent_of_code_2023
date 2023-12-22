@@ -14,13 +14,17 @@ impl Universe {
         let height = input.len();
         let width = input[0].len();
         for i in 0..height {
-            for j in 0..width{
+            for j in 0..width {
                 if input[i][j] == '#' {
                     galaxies.push((i, j));
                 }
             }
         }
-        Universe { galaxies, width, height }
+        Universe {
+            galaxies,
+            width,
+            height,
+        }
     }
 
     pub fn expand(&mut self) {
@@ -44,23 +48,23 @@ impl Universe {
         }
     }
 
-    pub fn shift_from_row(&mut self, i: usize){
-        for mut galaxy in &mut self.galaxies{
+    pub fn shift_from_row(&mut self, i: usize) {
+        for mut galaxy in &mut self.galaxies {
             if galaxy.0 > i {
                 galaxy.0 += 999999;
             }
         }
     }
 
-    pub fn shift_from_col(&mut self, j: usize){
-        for mut galaxy in &mut self.galaxies{
+    pub fn shift_from_col(&mut self, j: usize) {
+        for mut galaxy in &mut self.galaxies {
             if galaxy.1 > j {
                 galaxy.1 += 999999;
             }
         }
     }
 
-    pub fn galaxies_in_row(&self, i: usize) -> usize{
+    pub fn galaxies_in_row(&self, i: usize) -> usize {
         let mut count: usize = 0;
         for galaxy in &self.galaxies {
             if galaxy.0 == i {
@@ -70,7 +74,7 @@ impl Universe {
         count
     }
 
-    pub fn galaxies_in_col(&self, j: usize) -> usize{
+    pub fn galaxies_in_col(&self, j: usize) -> usize {
         let mut count: usize = 0;
         for galaxy in &self.galaxies {
             if galaxy.1 == j {
@@ -91,9 +95,9 @@ impl Universe {
     }
 
     pub fn distance(&self, i: usize, j: usize) -> usize {
-        ((self.galaxies[i].0 as i32 - self.galaxies[j].0 as i32).abs() +  (self.galaxies[i].1 as i32 - self.galaxies[j].1 as i32).abs()) as usize
+        ((self.galaxies[i].0 as i32 - self.galaxies[j].0 as i32).abs()
+            + (self.galaxies[i].1 as i32 - self.galaxies[j].1 as i32).abs()) as usize
     }
-
 }
 
 pub fn main() {

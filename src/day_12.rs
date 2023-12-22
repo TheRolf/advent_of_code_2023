@@ -22,10 +22,14 @@ impl UniquePermutations {
             let elements = Some(elements);
             Self::Leaf { elements }
         } else {
-            let mut unique_elements = elements.clone().into_iter().collect::<BTreeSet<_>>().into_iter();
+            let mut unique_elements = elements
+                .clone()
+                .into_iter()
+                .collect::<BTreeSet<_>>()
+                .into_iter();
 
-            let (first_element, inner) =
-                Self::next_level(&mut unique_elements, elements.clone()).expect("Must have at least one item");
+            let (first_element, inner) = Self::next_level(&mut unique_elements, elements.clone())
+                .expect("Must have at least one item");
 
             Self::Stem {
                 elements,
@@ -36,7 +40,10 @@ impl UniquePermutations {
         }
     }
 
-    fn next_level(mut unique_elements: impl Iterator<Item = i32>, elements: Vec<i32>) -> Option<(i32, Box<Self>)> {
+    fn next_level(
+        mut unique_elements: impl Iterator<Item = i32>,
+        elements: Vec<i32>,
+    ) -> Option<(i32, Box<Self>)> {
         let first_element = unique_elements.next()?;
 
         let mut remaining_elements = elements;
@@ -69,7 +76,8 @@ impl Iterator for UniquePermutations {
                         return Some(v);
                     }
                     None => {
-                        let (next_fe, next_i) = Self::next_level(&mut *unique_elements, elements.clone())?;
+                        let (next_fe, next_i) =
+                            Self::next_level(&mut *unique_elements, elements.clone())?;
                         *first_element = next_fe;
                         *inner = next_i;
                     }
@@ -220,7 +228,11 @@ impl Row {
         // fixing the damaged sequences from the largest size until they are certain
         let config_desc = new_row.config.clone().sort_by(|a, b| b.cmp(a));
 
-        println!("{} -> {}", self.cells.iter().collect::<String>(), new_row.cells.iter().collect::<String>());
+        println!(
+            "{} -> {}",
+            self.cells.iter().collect::<String>(),
+            new_row.cells.iter().collect::<String>()
+        );
         new_row.iterate_brute_force()
     }
 }
