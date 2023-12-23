@@ -46,12 +46,20 @@ impl Brick {
 }
 
 pub fn main() {
-    let input = puzzle_input_aslines(22, true);
+    let input = puzzle_input_aslines(22, false);
     let mut bricks: Vec<Brick> = Vec::new();
-    let mut uppercase_letter = b'A';
+    let mut uppercase_letters = vec![b'A', b'A', b'A'];
     for line in input{
-        bricks.push(Brick::new(line, String::from_utf8(vec![uppercase_letter]).unwrap()));
-        uppercase_letter += 1;
+        bricks.push(Brick::new(line, String::from_utf8(uppercase_letters.clone()).unwrap()));
+        if uppercase_letters[2] == b'Z' {
+            uppercase_letters[1] += 1;
+            uppercase_letters[2] = b'A';
+        }
+        if uppercase_letters[1] == b'Z' {
+            uppercase_letters[0] += 1;
+            uppercase_letters[1] = b'A';
+        }
+        uppercase_letters[2] += 1;
     }
 
     for brick in &bricks {
@@ -90,5 +98,37 @@ pub fn main() {
     for brick in &bricks {
         println!("{:?}", brick);
     }
+
+    let mut count = 0;
+    for i_remove in 0..bricks.len(){
+        let mut bricks_altered = bricks.clone();
+        bricks_altered.remove(i_remove);
+        let mut any_fall = false;
+        for i in 0..bricks_altered.len() {
+            let brick_bottom: usize = bricks_altered[i].corners.0.z.min(bricks_altered[i].corners.1.z);
+            let mut can_fall = true;
+            if brick_bottom == 1 {
+                continue;
+            }
+            for point in bricks_altered[i].parts() {
+                let mut fallen_point = point.clone();
+                fallen_point.z -= 1;
+                for j in 0..bricks_altered.len() {
+                    if i != j && point.z == brick_bottom && bricks_altered[j].contains(&fallen_point) {
+                        can_fall = false;
+                    }
+                }
+            }
+            if can_fall {
+                any_fall = true;
+            }
+
+        }
+        if !any_fall {
+            count += 1;
+        }
+    }
+
+    println!("{}", count);
 
 }
