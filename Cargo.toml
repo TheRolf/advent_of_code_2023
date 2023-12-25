@@ -19,6 +19,7 @@ num-integer = "0.1.45"
 num-traits = "0.2"
 pathfinding = "4.6.0"
 itertools = "0.12.0"
+graph = "0.3.1"
 
 [[bin]]
 name = "1"
@@ -115,3 +116,7 @@ path = "src/day_23.rs"
 [[bin]]
 name = "24"
 path = "src/day_24.rs"
+
+[[bin]]
+name = "25"
+path = "src/day_25.rs"
