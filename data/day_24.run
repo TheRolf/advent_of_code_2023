@@ -1,0 +1,24 @@
+# run.run - AMPL run file
+
+# Set float tolerance
+option tol 1e-15;  # Set the tolerance value according to your needs
+
+# Solve the system of equalities
+solve;
+
+# Display the results
+printf "Solution:\n";
+printf "sum = %.g\n", x+y+z;
+printf "x = %.g\n", x;
+printf "y = %.g\n", y;
+printf "z = %.g\n", z;
+printf "dx = %g\n", dx;
+printf "dy = %g\n", dy;
+printf "dz = %g\n", dz;
+printf "t = %.g\n", t;
+printf "s = %.g\n", s;
+#printf "u = %.g\n", u;
+printf "v = %.g\n", v;
+
+# Exit AMPL
+end;
