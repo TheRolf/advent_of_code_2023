@@ -72,11 +72,20 @@ impl Module {
         }
     }
 
+    pub fn add_previous_pulse(&mut self, prev: String) {
+        match self {
+            Self::Conjunction { previous_pulses, .. } => {
+                previous_pulses.insert(prev, Pulse::Low);
+            }
+            _ => {}
+        }
+    }
+
     pub fn pulse(&mut self, sender: String, incoming_pulse: Pulse, pulse_queue: &mut Vec<(String, Pulse, String)>) {
         match self {
             Self::Broadcaster { name, destinations, .. } => {
                 for succ in destinations {
-                    println!("{} -{:?}-> {}", name, incoming_pulse, succ);
+                    // println!("{} -{:?}-> {}", name, incoming_pulse, succ);
                     pulse_queue.push((name.clone(), incoming_pulse.clone(), succ.clone()));
                 }
             }
@@ -95,7 +104,7 @@ impl Module {
                     }
                 }
                 for succ in destinations {
-                    println!("{} -{:?}-> {}", name, outgoing_pulse, succ);
+                    // println!("{} -{:?}-> {}", name, outgoing_pulse, succ);
                     pulse_queue.push((name.clone(), outgoing_pulse.clone(), succ.clone()));
                 }
             }
@@ -108,12 +117,12 @@ impl Module {
                 if incoming_pulse == Pulse::Low {
                     *is_on = !(*is_on);
                     for succ in destinations {
-                        println!(
-                            "{} -{:?}-> {}",
-                            name,
-                            if *is_on { Pulse::High } else { Pulse::Low },
-                            succ
-                        );
+                        // println!(
+                        //     "{} -{:?}-> {}",
+                        //     name,
+                        //     if *is_on { Pulse::High } else { Pulse::Low },
+                        //     succ
+                        // );
                         pulse_queue.push((
                             name.clone(),
                             if *is_on { Pulse::High } else { Pulse::Low },
@@ -130,6 +139,10 @@ impl Module {
 struct System {
     modules: HashMap<String, Module>,
     pulse_queue: Vec<(String, Pulse, String)>,
+    low_count: usize,
+    high_count: usize,
+    rx_low_count: usize,
+    rx_high_count: usize,
 }
 
 impl System {
@@ -140,7 +153,15 @@ impl System {
             let mut module = Module::new(line);
             let name = module.get_name();
             for succ in module.get_destinations() {
-                conj_pred.entry(succ).or_insert(Vec::new()).push(name.clone());
+                conj_pred.entry(succ.clone()).or_insert(Vec::new()).push(name.clone());
+                if modules.contains_key(&succ) {
+                    match modules.get(&succ).unwrap() {
+                        Module::Conjunction { .. } => {
+                            modules.entry(succ).and_modify(|conj| conj.add_previous_pulse(name.clone()));
+                        }
+                        _ => {}
+                    }
+                }
             }
             match &mut module {
                 Module::Conjunction { previous_pulses, .. } => {
@@ -150,15 +171,24 @@ impl System {
                 }
                 _ => {}
             }
+
             modules.insert(name, module);
         }
         System {
             modules,
             pulse_queue: Vec::new(),
+            low_count: 0,
+            high_count: 0,
+            rx_low_count: 0,
+            rx_high_count: 0,
         }
     }
 
     pub fn press_button(&mut self) {
+        // println!();
+        self.rx_low_count = 0;
+        self.rx_high_count = 0;
+        self.low_count += 1;
         self.modules
             .entry("broadcaster".to_string())
             .and_modify(|module| module.pulse(" ".to_string(), Pulse::Low, &mut self.pulse_queue));
@@ -168,6 +198,20 @@ impl System {
             let mut module: &Module;
             let mut pulse: Pulse;
             (sender, pulse, receiver) = self.pulse_queue.remove(0);
+            match pulse {
+                Pulse::Low => {
+                    if receiver == "rx" {
+                        self.rx_low_count += 1;
+                    }
+                    self.low_count += 1;
+                }
+                Pulse::High => {
+                    if receiver == "rx" {
+                        self.rx_high_count += 1;
+                    }
+                    self.high_count += 1;
+                }
+            }
             self.modules
                 .entry(receiver.clone())
                 .and_modify(|module| module.pulse(sender, pulse, &mut self.pulse_queue));
@@ -176,10 +220,22 @@ impl System {
 }
 
 pub fn main() {
-    let input = puzzle_input_aslines(20, true);
+    let input = puzzle_input_aslines(20, false);
     let mut system = System::new(&input);
     for (name, module) in &system.modules {
         println!("{}: {:?}", name, module);
     }
-    system.press_button();
+    let mut button_count = 0;
+    loop {
+        button_count += 1;
+        system.press_button();
+        if system.rx_low_count == 1 && system.rx_high_count == 0 {
+            break;
+        }
+        if button_count % 10000 == 0 {
+            println!("{}", button_count);
+        }
+    }
+    println!("{}", button_count);
+    println!("{}", system.low_count * system.high_count);
 }
