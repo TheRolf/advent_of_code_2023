@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use std::collections::HashSet;
 
 use advent_of_code_2023::*;
@@ -117,18 +115,21 @@ impl Structure {
         has_fallen.len()
     }
 
-    pub fn safe_bricks(&self) -> usize {
-        let mut count = 0;
+    pub fn simulate(&self) -> (usize, usize) {
+        let mut safe_brick_count = 0;
+        let mut total_fallen_count = 0;
         for i_remove in 0..self.bricks.len() {
-            println!("{}", self.bricks[i_remove].name);
+            print!("{}: ", self.bricks[i_remove].name);
             let mut structure_altered = self.clone();
             structure_altered.bricks.remove(i_remove);
             let fallen_count = structure_altered.fall();
+            total_fallen_count += fallen_count;
             if fallen_count == 0 {
-                count += 1;
+                safe_brick_count += 1;
             }
+            println!("{}", fallen_count);
         }
-        count
+        (safe_brick_count, total_fallen_count)
     }
 }
 
@@ -140,7 +141,9 @@ pub fn main() {
         println!("{:?}", brick);
     }
 
-    println!("{}", structure.fall());
+    println!("Fallen: {}", structure.fall());
 
-    println!("{}", structure.safe_bricks());
+    let (safe_bricks, total_fallen) = structure.simulate();
+    println!("Safe bricks: {}", safe_bricks);
+    println!("Total fallen: {}", total_fallen);
 }
