@@ -1,6 +1,5 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use advent_of_code_2023::*;
+
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt;
@@ -113,8 +112,7 @@ impl Hand {
             for (card, freq) in counter {
                 if card != 'J' && freq >= frequency {
                     if freq > frequency
-                        || substituted_hand.card_value(card)
-                            > substituted_hand.card_value(frequent_card)
+                        || substituted_hand.card_value(card) > substituted_hand.card_value(frequent_card)
                     {
                         frequent_card = card;
                         frequency = freq;
@@ -133,10 +131,7 @@ impl Hand {
 
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self
-            .substitute_joker()
-            .partial_cmp(&other.substitute_joker())
-        {
+        match self.substitute_joker().partial_cmp(&other.substitute_joker()) {
             Some(Ordering::Equal) => {
                 // Compare based on the array values
                 Some(self.card_values().cmp(&other.card_values()))
@@ -153,11 +148,10 @@ impl Ord for Hand {
 }
 
 pub fn main() {
-    let input: Vec<String> = puzzle_input_aslines(7);
+    let input: Vec<String> = puzzle_input_aslines(7, false);
     let mut hands: Vec<Hand> = Vec::new();
     for line in input {
-        let mut new_hand: Hand = Hand::new(line);
-        println!("{:?}", new_hand.cards);
+        let new_hand: Hand = Hand::new(line);
         hands.push(new_hand);
     }
 
@@ -165,7 +159,7 @@ pub fn main() {
 
     let mut winnings = 0;
     let mut i = 1;
-    for mut hand in hands {
+    for hand in hands {
         hand.println();
         hand.value();
         winnings += i * hand.bid;

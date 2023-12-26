@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use std::collections::HashMap;
 
 use advent_of_code_2023::*;
@@ -193,10 +191,9 @@ impl System {
             .entry("broadcaster".to_string())
             .and_modify(|module| module.pulse(" ".to_string(), Pulse::Low, &mut self.pulse_queue));
         while !self.pulse_queue.is_empty() {
-            let mut sender: String;
-            let mut receiver: String;
-            let mut module: &Module;
-            let mut pulse: Pulse;
+            let sender: String;
+            let receiver: String;
+            let pulse: Pulse;
             (sender, pulse, receiver) = self.pulse_queue.remove(0);
             match pulse {
                 Pulse::Low => {

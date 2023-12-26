@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use advent_of_code_2023::*;
 
 #[derive(Clone)]
@@ -25,28 +23,7 @@ impl Layout {
     }
 
     pub fn simulate(&mut self, pos_i: i32, pos_j: i32, dir_i: i32, dir_j: i32) {
-        // println!(
-        //     "Simulating ({}, {}) with direction {}",
-        //     pos_i + 1,
-        //     pos_j + 1,
-        //     if dir_i == 1 {
-        //         "down"
-        //     } else if dir_i == -1 {
-        //         "up"
-        //     } else if dir_j == 1 {
-        //         "right"
-        //     } else if dir_j == -1 {
-        //         "left"
-        //     } else {
-        //         ""
-        //     },
-        // );
-
-        if 0 <= pos_i
-            && (pos_i as usize) < self.height
-            && 0 <= pos_j
-            && (pos_j as usize) < self.width
-        {
+        if 0 <= pos_i && (pos_i as usize) < self.height && 0 <= pos_j && (pos_j as usize) < self.width {
             let mut i: i32 = pos_i as i32;
             let mut j: i32 = pos_j as i32;
             match self.cells[i as usize][j as usize] {
@@ -93,11 +70,7 @@ impl Layout {
                     loop {
                         i += dir_i as i32;
                         j += dir_j as i32;
-                        if 0 > i
-                            || (i as usize) >= self.height
-                            || 0 > j
-                            || (j as usize) >= self.width
-                        {
+                        if 0 > i || (i as usize) >= self.height || 0 > j || (j as usize) >= self.width {
                             return;
                         } else if self.cells[i as usize][j as usize] == '.' {
                             self.energise(i as usize, j as usize);
@@ -113,7 +86,6 @@ impl Layout {
     }
 
     pub fn energise(&mut self, i: usize, j: usize) {
-        // println!("\t marking ({}, {}) as energised", i + 1, j + 1);
         self.energised[i][j] = '#';
     }
 
@@ -132,8 +104,13 @@ impl Layout {
 
 pub fn main() {
     let input: Vec<Vec<char>> = puzzle_input_asarray(16, false);
-    let mut layout: Layout = Layout::new(input);
+    let layout: Layout = Layout::new(input);
     let mut most_energised: usize = 0;
+
+    let mut layout_copy = layout.clone();
+    layout_copy.simulate(0, 0, 0, 1);
+    println!("{}", layout_copy.energised_count());
+
     for i in 0..layout.height {
         let mut layout_copy_1: Layout = layout.clone();
         layout_copy_1.simulate(i as i32, 0, 0, 1);
@@ -150,7 +127,6 @@ pub fn main() {
         layout_copy_2.simulate(layout.height as i32 - 1, j as i32, -1, 0);
         most_energised = most_energised.max(layout_copy_2.energised_count());
     }
-    layout.simulate(0, 0, 0, 1);
-    println!("{}", layout.energised_count());
+
     println!("{}", most_energised);
 }

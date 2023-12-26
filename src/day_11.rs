@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use advent_of_code_2023::*;
 
 struct Universe {
@@ -49,7 +47,7 @@ impl Universe {
     }
 
     pub fn shift_from_row(&mut self, i: usize) {
-        for mut galaxy in &mut self.galaxies {
+        for galaxy in &mut self.galaxies {
             if galaxy.0 > i {
                 galaxy.0 += 999999;
             }
@@ -57,7 +55,7 @@ impl Universe {
     }
 
     pub fn shift_from_col(&mut self, j: usize) {
-        for mut galaxy in &mut self.galaxies {
+        for galaxy in &mut self.galaxies {
             if galaxy.1 > j {
                 galaxy.1 += 999999;
             }

@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use std::collections::{BTreeSet, HashSet};
 
 use advent_of_code_2023::*;
@@ -45,7 +43,6 @@ impl Garden {
     }
 
     pub fn reach_brute_force(&mut self, i: i32, j: i32, step_count: usize) {
-        // println!("{} {}: {}", i, j, step_count);
         if step_count == 0 {
             self.visited.insert((i as usize, j as usize));
         } else {
@@ -76,9 +73,7 @@ impl Garden {
                     let i_new = i + i_diff;
                     let j_new = j + j_diff;
                     if !history.contains(&(i_new, j_new, step_count - 1))
-                        && self.map[modulo(i_new, self.length as i32)]
-                            [modulo(j_new, self.width as i32)]
-                            != '#'
+                        && self.map[modulo(i_new, self.length as i32)][modulo(j_new, self.width as i32)] != '#'
                     {
                         queue.insert((i_new, j_new, step_count - 1));
                         history.insert((i_new, j_new, step_count - 1));
@@ -86,10 +81,6 @@ impl Garden {
                 }
             }
         }
-    }
-
-    pub fn is_valid(&self, i: i32, j: i32) -> bool {
-        i >= 0 && (i as usize) < self.length && j >= 0 && (j as usize) < self.width
     }
 
     pub fn show_visited(&self) {
@@ -107,13 +98,14 @@ impl Garden {
 }
 
 pub fn main() {
-    let example = true;
+    let example = false;
     let input = puzzle_input_asarray(21, example);
     let mut garden: Garden = Garden::new(input);
-    // garden.reach_from_start(if example {6} else {64}, false);
-
-    garden.reach_from_start(if example { 1000 } else { 64 }, false);
+    garden.reach_from_start(if example { 6 } else { 64 }, false);
     garden.show_visited();
     println!("{}", garden.visited.len());
-    // println!("{:?}", garden.visited);
+    garden.visited = HashSet::new();
+
+    garden.reach_from_start(if example { 1000 } else { 26501365 }, false);
+    println!("{}", garden.visited.len());
 }

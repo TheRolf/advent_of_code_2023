@@ -34,14 +34,9 @@ impl Network {
     }
 
     pub fn add(&mut self, line: String) {
-        let result: Vec<&str> = line
-            .split(|c| ['(', ')', ' ', ',', '='].contains(&c))
-            .filter(|s| !s.is_empty())
-            .collect();
-        let node: Step = Step::new(
-            result.get(1).unwrap().to_string(),
-            result.get(2).unwrap().to_string(),
-        );
+        let result: Vec<&str> =
+            line.split(|c| ['(', ')', ' ', ',', '='].contains(&c)).filter(|s| !s.is_empty()).collect();
+        let node: Step = Step::new(result.get(1).unwrap().to_string(), result.get(2).unwrap().to_string());
         self.nodes.insert(result.get(0).unwrap().to_string(), node);
         if result.get(0).unwrap().chars().nth(2).unwrap() == 'A' {
             self.currents.push(result.get(0).unwrap().to_string());
@@ -51,18 +46,10 @@ impl Network {
     pub fn step(&mut self, index: usize, step_type: char) {
         let current: String = self.currents[index].clone();
         if step_type == 'L' {
-            self.currents[index] = self
-                .nodes
-                .get(&current)
-                .map(|own_type| own_type.left.clone())
-                .unwrap();
+            self.currents[index] = self.nodes.get(&current).map(|own_type| own_type.left.clone()).unwrap();
         }
         if step_type == 'R' {
-            self.currents[index] = self
-                .nodes
-                .get(&current)
-                .map(|own_type| own_type.right.clone())
-                .unwrap();
+            self.currents[index] = self.nodes.get(&current).map(|own_type| own_type.right.clone()).unwrap();
         }
     }
 
@@ -72,10 +59,15 @@ impl Network {
 }
 
 pub fn main() {
-    // let instructions = "LR";
-    let instructions = "LRLRLLRRLRRRLRLRRLRLLRRLRRRLRLRLRLRRLRLLRRRLRRRLLRRLRRLRLRRRLLLRRLRLRLRLRLRLLRRRLRLRRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLLRLLRRLRRLRRLRRRLLRLRRLRLRLRRLLRLRRRLRRLLRLRLRRRLRRLRRLRRLRLLRLRRRLLLRRRLLLLRRLRRRLLLRRLLRLRLRLLLRRRLLRRRLLLRLRRLLRRRLRRRLRLLRRRLRLRLRLLRRLLRRLRRRLRLRRRLRRLRLRRLRRRR";
+    let example = false;
 
-    let input: Vec<String> = puzzle_input_aslines(8);
+    let instructions = if example {
+        "LR"
+    } else {
+        "LRLRLLRRLRRRLRLRRLRLLRRLRRRLRLRLRLRRLRLLRRRLRRRLLRRLRRLRLRRRLLLRRLRLRLRLRLRLLRRRLRLRRRLRRRLRRRLRRRLRRRLRRRLRRRLRRLRRRLLRLLRRLRRLRRLRRRLLRLRRLRLRLRRLLRLRRRLRRLLRLRLRRRLRRLRRLRRLRLLRLRRRLLLRRRLLLLRRLRRRLLLRRLLRLRLRLLLRRRLLRRRLLLRLRRLLRRRLRRRLRLLRRRLRLRLRLLRRLLRRLRRRLRLRRRLRRLRLRRLRRRR"
+    };
+
+    let input: Vec<String> = puzzle_input_aslines(8, example);
     let mut network: Network = Network::new();
     for line in input {
         network.add(line);
@@ -89,10 +81,7 @@ pub fn main() {
         let mut step_type: char;
         let start_node = network.currents[index].clone();
         while !network.is_done(index) {
-            step_type = instructions
-                .chars()
-                .nth(step_count % instructions.len())
-                .unwrap();
+            step_type = instructions.chars().nth(step_count % instructions.len()).unwrap();
             network.step(index, step_type);
             step_count += 1;
         }

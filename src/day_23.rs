@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables, unused_mut)]
+#![allow(unused_variables)]
 
 use advent_of_code_2023::*;
 
@@ -38,7 +38,7 @@ impl Planner {
         initial_walk.cells.push(Cell{ x: 0, y: 1});
         walks.push(initial_walk);        
         while !walks.is_empty() {
-            let mut current_walk = walks.pop().unwrap();
+            let current_walk = walks.pop().unwrap();
             for new_cell in self.next(current_walk.cells.last().unwrap(), &current_walk){
                 let mut progressed_walk = current_walk.clone();
                 progressed_walk.cells.push(new_cell.clone());

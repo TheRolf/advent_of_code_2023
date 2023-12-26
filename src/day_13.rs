@@ -16,15 +16,6 @@ impl Pattern {
         }
     }
 
-    pub fn print(&self) {
-        for row in &self.cells {
-            for c in row {
-                print!("{} ", c);
-            }
-            println!();
-        }
-    }
-
     pub fn row_equal(&self, row_1: usize, row_2: usize) -> bool {
         for j in 0..self.width {
             if self.cells[row_1][j] != self.cells[row_2][j] {
@@ -107,9 +98,7 @@ impl Pattern {
         let original_value: usize = self.lines_before_mirror(-1);
         for row in 0..self.height {
             for col in 0..self.width {
-                let value = self
-                    .smudge(row, col)
-                    .lines_before_mirror(original_value as i32);
+                let value = self.smudge(row, col).lines_before_mirror(original_value as i32);
                 if value != original_value && value > 0 {
                     return value;
                 }

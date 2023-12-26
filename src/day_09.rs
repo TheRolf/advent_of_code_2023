@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_mut)]
-
 use advent_of_code_2023::*;
 
 struct Series {
@@ -13,7 +11,6 @@ impl Series {
         let mut index: usize = 0;
         loop {
             let diff: Vec<i32> = Series::calc_diff(series.get(index).unwrap());
-            let sum: i32 = diff.iter().sum();
             let all_zeroes = diff.iter().all(|&x| x == 0);
             series.push(diff);
             if all_zeroes {
@@ -37,8 +34,7 @@ impl Series {
             if depth == self.series.len() - 1 {
                 self.series[depth].push(0);
             } else {
-                let extra_value: i32 =
-                    self.series[depth].last().unwrap() + self.series[depth + 1].last().unwrap();
+                let extra_value: i32 = self.series[depth].last().unwrap() + self.series[depth + 1].last().unwrap();
                 self.series[depth].push(extra_value);
             }
         }
@@ -55,12 +51,6 @@ impl Series {
             }
         }
         *self.series[0].last().unwrap()
-    }
-
-    pub fn println(&self) {
-        for series in &self.series {
-            println!("{:?}", series);
-        }
     }
 }
 

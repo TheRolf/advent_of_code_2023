@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables, unused_mut)]
+#![allow(dead_code)]
 
 use advent_of_code_2023::*;
 
@@ -74,7 +74,7 @@ impl Weather {
 pub fn main() {
     let example = false;
     let input = puzzle_input_aslines(24, example);
-    let mut weather = Weather::new(input);
+    let weather = Weather::new(input);
     for hail in &weather.hails {
         println!("{:?}", hail);
     }

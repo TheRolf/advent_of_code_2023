@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables, unused_mut)]
+#![allow(unused_variables)]
 
 use std::collections::btree_set::{BTreeSet, IntoIter};
 
@@ -22,14 +22,10 @@ impl UniquePermutations {
             let elements = Some(elements);
             Self::Leaf { elements }
         } else {
-            let mut unique_elements = elements
-                .clone()
-                .into_iter()
-                .collect::<BTreeSet<_>>()
-                .into_iter();
+            let mut unique_elements = elements.clone().into_iter().collect::<BTreeSet<_>>().into_iter();
 
-            let (first_element, inner) = Self::next_level(&mut unique_elements, elements.clone())
-                .expect("Must have at least one item");
+            let (first_element, inner) =
+                Self::next_level(&mut unique_elements, elements.clone()).expect("Must have at least one item");
 
             Self::Stem {
                 elements,
@@ -40,10 +36,7 @@ impl UniquePermutations {
         }
     }
 
-    fn next_level(
-        mut unique_elements: impl Iterator<Item = i32>,
-        elements: Vec<i32>,
-    ) -> Option<(i32, Box<Self>)> {
+    fn next_level(mut unique_elements: impl Iterator<Item = i32>, elements: Vec<i32>) -> Option<(i32, Box<Self>)> {
         let first_element = unique_elements.next()?;
 
         let mut remaining_elements = elements;
@@ -76,8 +69,7 @@ impl Iterator for UniquePermutations {
                         return Some(v);
                     }
                     None => {
-                        let (next_fe, next_i) =
-                            Self::next_level(&mut *unique_elements, elements.clone())?;
+                        let (next_fe, next_i) = Self::next_level(&mut *unique_elements, elements.clone())?;
                         *first_element = next_fe;
                         *inner = next_i;
                     }
@@ -98,8 +90,8 @@ struct Row {
 impl Row {
     pub fn new(line: String) -> Self {
         let split_input: Vec<&str> = line.split(" ").collect();
-        let mut cells: Vec<char> = split_input[0].chars().collect();
-        let mut config: Vec<usize> = split_input[1].split(",").flat_map(str::parse).collect();
+        let cells: Vec<char> = split_input[0].chars().collect();
+        let config: Vec<usize> = split_input[1].split(",").flat_map(str::parse).collect();
         let mut damaged: Vec<usize> = Vec::new();
         let mut unknown: Vec<usize> = Vec::new();
         for (i, cell) in cells.iter().enumerate() {
@@ -146,7 +138,7 @@ impl Row {
         if base.len() == 0 {
             return (1, 0);
         }
-        for (j, perm) in UniquePermutations::new(base).enumerate() {
+        for (_, perm) in UniquePermutations::new(base).enumerate() {
             let mut new_row = self.clone();
             for (i, x) in perm.iter().enumerate() {
                 if *x == 1 {
@@ -185,9 +177,6 @@ impl Row {
 
     pub fn iterate_heuristic(&mut self) -> (usize, usize) {
         let mut new_row = self.clone();
-        let mut damaged_sequences: Vec<(usize, usize)> = Vec::new();
-        let mut current_index: usize = 0;
-        let mut current_length: usize = 0;
 
         // fixing the damaged sequences from the left until they are certain
         let mut cell_index = 0;
@@ -244,23 +233,18 @@ struct SpringRecord {
 pub fn main() {
     let input: Vec<String> = puzzle_input_aslines(12, false);
     let mut spring_record: SpringRecord = SpringRecord { rows: Vec::new() };
-    let mut count_bf = 0;
     let mut count = 0;
     for line in input {
-        let mut row: Row = Row::new(line);
+        let row: Row = Row::new(line);
         spring_record.rows.push(row);
     }
 
     for (i, row) in spring_record.rows.iter_mut().enumerate() {
         print!("{}: ", i + 1);
-        // let local_count_bf = row.iterate_brute_force();
         let local_count = row.iterate_heuristic();
-        // print!("{:?} \t", local_count_bf);
         print!("{:?} \t", local_count);
         println!();
-        // count_bf += local_count_bf.0;
         count += local_count.0;
     }
-    // println!("{}", count_bf);
     println!("{}", count);
 }
